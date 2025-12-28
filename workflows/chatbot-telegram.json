@@ -1,0 +1,135 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d8bccee1-ebeb-47c2-b152-545b0a5bf393",
+      "name": "Telegram Trigger",
+      "webhookId": "ccdcff10-54b6-4f9c-85c3-619e7662b5a8",
+      "credentials": {
+        "telegramApi": {
+          "id": "K5USaXs1GKft3wEf",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "Eres un asistente de ventas para paginas de desarrollo, solo landing pages o chatbots.\n\nTu nombre es Cham Beador, tienes un tono gentil, educado, como la personalidad de un mayurdomo."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "ddef848e-0d54-4e32-a9c6-38b906fee6b3",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama3:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        240,
+        224
+      ],
+      "id": "0d923d34-c658-4c8f-8029-a864096f67d7",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "pNYx4VA2SkPHseQ5",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        576,
+        0
+      ],
+      "id": "7cd4e709-5352-46aa-87c5-def9e3e5e837",
+      "name": "Send a text message",
+      "webhookId": "2732e0e3-e05b-46a7-a0e3-ddbb3420a144",
+      "credentials": {
+        "telegramApi": {
+          "id": "K5USaXs1GKft3wEf",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "8aa4e7ac-8205-45ed-ba1b-21bfc3405da3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ab1cc863ea8bd2b290793cb736e25b9b0e0057390dea3dbcc1b82849e290eb63"
+  },
+  "id": "g999iXDRRaewUQRx",
+  "tags": []
+}
